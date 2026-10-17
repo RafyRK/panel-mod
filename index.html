@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Panel Mod Data</title>
+    <title>Web Panel Mod Data - Admin</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Poppins -->
@@ -14,67 +14,101 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col">
 
-    <!-- Header / Navbar -->
-    <header class="bg-indigo-600 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-wide">⚡ Admin Panel Mod Data</h1>
-            <div class="flex items-center gap-2">
-                <span class="text-sm bg-indigo-700 px-3 py-1 rounded-full">Administrator</span>
+    <!-- ================= HALAMAN LOGIN ================= -->
+    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl border border-slate-100">
+            <div class="text-center mb-6">
+                <span class="text-3xl">⚡</span>
+                <h2 class="text-xl font-bold text-slate-800 mt-2">Admin Panel Login</h2>
+                <p class="text-xs text-slate-500 mt-1">Masukkan kredensial untuk mengakses panel mod</p>
             </div>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
-        
-        <!-- Statistik Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <p class="text-slate-500 text-sm font-medium">Total Mod Data</p>
-                <h3 id="totalData" class="text-2xl font-bold text-slate-800 mt-1">3</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <p class="text-slate-500 text-sm font-medium">Mod Aktif</p>
-                <h3 id="activeData" class="text-2xl font-bold text-emerald-600 mt-1">3</h3>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <p class="text-slate-500 text-sm font-medium">Status Server</p>
-                <h3 class="text-2xl font-bold text-indigo-600 mt-1">Online 🟢</h3>
-            </div>
-        </div>
-
-        <!-- Panel Kontrol & Tabel -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <!-- Header Tabel & Tombol Tambah -->
-            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="w-full sm:w-auto">
-                    <input type="text" id="searchInput" placeholder="Cari nama mod..." 
-                        class="w-full sm:w-64 px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Username</label>
+                    <input type="text" id="loginUser" required placeholder="admin" 
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
-                <button onclick="openModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200 flex items-center justify-center gap-2">
-                    <span>+ Tambah Mod Baru</span>
+                <div class="mb-6">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
+                    <input type="password" id="loginPass" required placeholder="••••••••" 
+                        class="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <p id="loginError" class="text-rose-500 text-xs mb-4 text-center hidden">Username atau password salah!</p>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg text-sm transition duration-200 shadow-sm">
+                    Masuk Panel
                 </button>
-            </div>
-
-            <!-- Tabel Data -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider">
-                            <th class="py-3 px-6">ID</th>
-                            <th class="py-3 px-6">Nama Mod</th>
-                            <th class="py-3 px-6">Kategori</th>
-                            <th class="py-3 px-6">Status</th>
-                            <th class="py-3 px-6 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modTableBody" class="divide-y divide-slate-100 text-sm text-slate-700">
-                        <!-- Data dimasukkan via JavaScript -->
-                    </tbody>
-                </table>
+            </form>
+            <div class="mt-6 text-center">
+                <p class="text-[11px] text-slate-400">Default: Username: <b>admin</b> | Password: <b>admin123</b></p>
             </div>
         </div>
-    </main>
+    </div>
+
+    <!-- ================= DASHBOARD PANEL (Tersembunyi sebelum login) ================= -->
+    <div id="dashboardContainer" class="hidden flex-col min-h-screen">
+        <!-- Header / Navbar -->
+        <header class="bg-indigo-600 text-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <h1 class="text-xl font-bold tracking-wide">⚡ Admin Panel Mod Data</h1>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm bg-indigo-700 px-3 py-1 rounded-full">Administrator</span>
+                    <button onclick="handleLogout()" class="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
+                        Keluar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+            <!-- Statistik Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-sm font-medium">Total Mod Data</p>
+                    <h3 id="totalData" class="text-2xl font-bold text-slate-800 mt-1">3</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-sm font-medium">Mod Aktif</p>
+                    <h3 id="activeData" class="text-2xl font-bold text-emerald-600 mt-1">3</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-sm font-medium">Status Server</p>
+                    <h3 class="text-2xl font-bold text-indigo-600 mt-1">Online 🟢</h3>
+                </div>
+            </div>
+
+            <!-- Panel Kontrol & Tabel -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="w-full sm:w-auto">
+                        <input type="text" id="searchInput" placeholder="Cari nama mod..." 
+                            class="w-full sm:w-64 px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button onclick="openModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-200 flex items-center justify-center gap-2">
+                        <span>+ Tambah Mod Baru</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider">
+                                <th class="py-3 px-6">ID</th>
+                                <th class="py-3 px-6">Nama Mod</th>
+                                <th class="py-3 px-6">Kategori</th>
+                                <th class="py-3 px-6">Status</th>
+                                <th class="py-3 px-6 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modTableBody" class="divide-y divide-slate-100 text-sm text-slate-700">
+                            <!-- Data dimasukkan via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <!-- Modal Form (Tambah/Edit) -->
     <div id="modModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
@@ -114,9 +148,55 @@
         &copy; 2026 Web Panel Mod Data. Dibuat dengan Tailwind CSS & JavaScript Vanilla.
     </footer>
 
-    <!-- JavaScript Logika Panel -->
+    <!-- JavaScript Logika Panel & Auth -->
     <script>
-        // Data Awal Mockup
+        // Konfigurasi Akun Admin Default
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "admin123";
+
+        // Cek Status Login saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                showDashboard();
+            }
+        });
+
+        // Proses Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+            const errorText = document.getElementById('loginError');
+
+            if (user === ADMIN_USER && pass === ADMIN_PASS) {
+                localStorage.setItem('isLoggedIn', 'true');
+                errorText.classList.add('hidden');
+                showDashboard();
+            } else {
+                errorText.classList.remove('hidden');
+            }
+        }
+
+        // Proses Logout
+        function handleLogout() {
+            localStorage.removeItem('isLoggedIn');
+            document.getElementById('dashboardContainer').classList.add('hidden');
+            document.getElementById('dashboardContainer').classList.remove('flex');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+
+        // Tampilkan Dashboard
+        function showDashboard() {
+            document.getElementById('loginPage').classList.add('hidden');
+            const dashboard = document.getElementById('dashboardContainer');
+            dashboard.classList.remove('hidden');
+            dashboard.classList.add('flex');
+            renderTable();
+        }
+
+        // Data Awal Mockup Mod
         let mods = [
             { id: 1, name: 'Mod Unlimited Money v1', category: 'Game Config', status: 'Aktif' },
             { id: 2, name: 'Bypass Security Script', category: 'Script/Tool', status: 'Aktif' },
@@ -137,7 +217,7 @@
                 return;
             }
 
-            data.forEach((mod, index) => {
+            data.forEach((mod) => {
                 const statusBadge = mod.status === 'Aktif' 
                     ? '<span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-xs font-semibold">Aktif</span>'
                     : '<span class="bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full text-xs font-semibold">Non-Aktif</span>';
@@ -189,10 +269,8 @@
             const status = document.getElementById('modStatus').value;
 
             if (id) {
-                // Edit data
                 mods = mods.map(m => m.id == id ? { id: Number(id), name, category, status } : m);
             } else {
-                // Tambah data baru
                 const newId = mods.length > 0 ? Math.max(...mods.map(m => m.id)) + 1 : 1;
                 mods.push({ id: newId, name, category, status });
             }
@@ -224,15 +302,14 @@
             }
         }
 
-        // Fitur Pencarian Real-time
-        searchInput.addEventListener('input', function(e) {
-            const keyword = e.target.value.toLowerCase();
-            const filtered = mods.filter(m => m.name.toLowerCase().includes(keyword) || m.category.toLowerCase().includes(keyword));
-            renderTable(filtered);
-        });
-
-        // Inisialisasi awal saat halaman dimuat
-        renderTable();
+        // Pencarian Real-time
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const keyword = e.target.value.toLowerCase();
+                const filtered = mods.filter(m => m.name.toLowerCase().includes(keyword) || m.category.toLowerCase().includes(keyword));
+                renderTable(filtered);
+            });
+        }
     </script>
 </body>
 </html>
